@@ -140,7 +140,7 @@
           </form>
         </div>
       </div>
-      {% elif not user and not request.session.seller_id %}
+      {% elif not user and not request.session.seller_id and not request.session.role == 'superadmin' %}
       <div class="alert alert-info"><a href="/user/login/">Login</a> to write a review.</div>
       {% endif %}
       {% for review in reviews %}
