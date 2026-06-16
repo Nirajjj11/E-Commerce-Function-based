@@ -5,8 +5,7 @@ from django.db import transaction
 from django.db.models import Q, Sum
 from django.utils import timezone
 
-from .models import (Product, Cart, Wishlist, Order, OrderItem,
-                     Review, Discount, SearchHistory, StockAlert, CATEGORY_CHOICES)
+from .models import (Product, Cart, Wishlist, Order, OrderItem, Review, Discount, SearchHistory, StockAlert, CATEGORY_CHOICES)
 from users.models import UserProfile
 from ml.recommendations import get_recommendations
 from ml.stock_alert import check_and_generate_stock_alerts

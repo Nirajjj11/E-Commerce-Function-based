@@ -10,8 +10,8 @@ from store.models import Product, Order, OrderItem, Discount, StockAlert
 from ml.sales_prediction import get_seasonal_prediction
 from ml.regional_analysis import get_all_regional_data
 
-SUPERADMIN_EMAIL    = 'admin@ecommerce.com'
-SUPERADMIN_PASSWORD = 'Admin@123'
+SUPERADMIN_EMAIL    = 'lotus@gmail.com'
+SUPERADMIN_PASSWORD = 'Alpha@123'
 
 
 def superadmin_login(request):
