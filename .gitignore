@@ -1,0 +1,130 @@
+# Python
+
+**pycache**/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+
+venv/
+.venv/
+env/
+ENV/
+
+# Environment variables
+
+.env
+.env.*
+!.env.example
+
+# Django
+
+*.log
+*.pot
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Local settings
+
+local_settings.py
+
+# Distribution / packaging
+
+.Python
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing / coverage
+
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.cache/
+.tox/
+.nox/
+
+# Jupyter
+
+.ipynb_checkpoints/
+
+# Type checking
+
+.mypy_cache/
+.pyre/
+.pytype/
+
+# Logs
+
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDEs / Editors
+
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+*.orig
+
+# OS files
+
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Node (if frontend is added later)
+
+node_modules/
+package-lock.json
+yarn.lock
+
+# Sensitive files
+
+*.pem
+*.key
+*.crt
+
+# Reports / generated files
+
+*.pdf
+*.csv
+*.xlsx
+
+# Machine learning / cache
+
+*.pkl
+*.joblib
+.ml_cache/
+
+# Static collected files
+
+/static/
+
+# Misc
+
+coverage.xml
+*.cover
