@@ -101,6 +101,7 @@
                 {% endwith %}
               </div>
             </div>
+            {% if request.session.user_id %}
             <div class="card-footer p-2 bg-white border-0">
               <div class="d-flex gap-1">
                 {% if p.stock_quantity > 0 %}
@@ -111,6 +112,7 @@
                 <a href="/wishlist/add/{{ p.product_id }}/" class="btn btn-outline-danger btn-sm"><i class="fas fa-heart"></i></a>
               </div>
             </div>
+            {% endif %}
           </div>
         </div>
         {% endfor %}
