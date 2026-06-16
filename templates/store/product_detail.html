@@ -44,7 +44,7 @@
         <tr><td class="text-muted pe-3">Mfg. Date</td><td>{{ product.manufacturing_date }}</td></tr>
         {% if product.expiry_date %}<tr><td class="text-muted pe-3">Expiry</td><td>{{ product.expiry_date }}</td></tr>{% endif %}
       </table>
-      {% if not request.session.seller_id %}
+      {% if request.session.user_id %}
       <div class="d-flex gap-2 mt-3 flex-wrap">
         {% if product.stock_quantity > 0 %}
         <a href="/cart/add/{{ product.product_id }}/" class="btn btn-primary btn-lg"><i class="fas fa-cart-plus me-2"></i>Add to Cart</a>
