@@ -1,4 +1,4 @@
 {
   "$schema": "https://railpack.com/schema.json",
-  "start": "gunicorn your_project_name.wsgi"
+  "start": "gunicorn ecommerce.wsgi"
 }
