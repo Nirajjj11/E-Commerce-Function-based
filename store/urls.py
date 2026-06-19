@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import ProductAnalyticsView
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -24,4 +25,5 @@ urlpatterns = [
     path('order/return/<int:order_item_id>/', views.request_return, name='request_return'),
     path('returns/my/', views.my_returns, name='my_returns'),
     path('returns/cancel/<uuid:return_id>/', views.cancel_return, name='cancel_return'),
+    path("analytics/<uuid:product_id>/",ProductAnalyticsView.as_view(),name="product_analytics"),
 ]

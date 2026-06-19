@@ -832,3 +832,78 @@ def cancel_return(request, return_id):
     except ReturnRequest.DoesNotExist:
         messages.error(request, 'Cannot cancel this return request.')
     return redirect('my_returns')
+
+# ====================== for sentiment analysis===================================
+from django.views.generic import TemplateView
+from django.shortcuts import get_object_or_404
+from .models import Product, Review
+from ml.sentiment_analysis import analyze_sentiment
+from ml.fake_review_detector import analyze_review
+
+class ProductAnalyticsView(TemplateView):
+    template_name = "store/analytics.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        product = get_object_or_404(
+            Product,
+            product_id=self.kwargs.get("product_id")
+        )
+
+        reviews = Review.objects.filter(product=product)
+
+        sentiment_data = {
+            "positive": 0,
+            "negative": 0,
+            "neutral": 0
+        }
+
+        fake_count = 0
+        all_reviews = []
+
+        for review in reviews:
+
+            sentiment = analyze_sentiment(
+                review.review_text
+            )
+
+            fake_result = analyze_review(
+                review.review_text,
+                review.rating
+            )
+
+            if sentiment["label"] == "Positive":
+                sentiment_data["positive"] += 1
+
+            elif sentiment["label"] == "Negative":
+                sentiment_data["negative"] += 1
+
+            else:
+                sentiment_data["neutral"] += 1
+
+            if fake_result["is_fake"]:
+                fake_count += 1
+
+            all_reviews.append({
+                "review": review,
+                "sentiment": sentiment,
+                "fake": fake_result
+            })
+
+        if sentiment_data["positive"] > sentiment_data["negative"]:
+            insight = "Customers mostly like this product 😊"
+
+        elif sentiment_data["negative"] > sentiment_data["positive"]:
+            insight = "Customers are mostly unhappy with this product 😐"
+
+        else:
+            insight = "Customer opinions are balanced"
+
+        context["product"] = product
+        context["reviews"] = all_reviews
+        context["sentiment_data"] = sentiment_data
+        context["fake_count"] = fake_count
+        context["insight"] = insight
+
+        return context

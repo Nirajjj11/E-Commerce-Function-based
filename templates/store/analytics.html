@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+      <div class="text-center mb-4">
+            <h2>{{ product.product_name }} Analytics Dashboard 📊</h2>
+
+            <div class="card shadow-sm p-3 mt-3" style="max-width:450px;margin:auto;">
+                  <h6>AI Insight</h6>
+                  <p>{{ insight }}</p>
+            </div>
+      </div>
+
+      <div class="row mb-4">
+
+            <div class="col-md-3">
+                  <div class="card bg-success text-white text-center p-3">
+                        <h3>{{ sentiment_data.positive }}</h3>
+                        <p>Positive</p>
+                  </div>
+            </div>
+
+            <div class="col-md-3">
+                  <div class="card bg-danger text-white text-center p-3">
+                        <h3>{{ sentiment_data.negative }}</h3>
+                        <p>Negative</p>
+                  </div>
+            </div>
+
+            <div class="col-md-3">
+                  <div class="card bg-secondary text-white text-center p-3">
+                        <h3>{{ sentiment_data.neutral }}</h3>
+                        <p>Neutral</p>
+                  </div>
+            </div>
+
+            <div class="col-md-3">
+                  <div class="card bg-warning text-dark text-center p-3">
+                        <h3>{{ fake_count }}</h3>
+                        <p>Fake Reviews</p>
+                  </div>
+            </div>
+
+      </div>
+
+      <div class="card shadow-sm p-4 mb-4">
+            <h5 class="text-center mb-4">Sentiment Distribution</h5>
+
+            <div class="d-flex justify-content-center">
+                  <div style="width:300px; height:300px;">
+                        <canvas id="sentimentChart"></canvas>
+                  </div>
+            </div>
+      </div>
+
+      <div class="card shadow-sm p-4">
+            <h5>Review Details</h5>
+
+            {% for item in reviews %}
+            <div class="border rounded p-3 mb-3">
+
+                  <strong>{{ item.review.user.name }}</strong>
+
+                  <div class="mt-2">
+                        <span class="badge bg-{{ item.sentiment.color }}">
+                              {{ item.sentiment.label }}
+                        </span>
+
+                        {% if item.fake.is_fake %}
+                        <span class="badge bg-danger">Fake</span>
+                        {% else %}
+                        <span class="badge bg-success">Genuine</span>
+                        {% endif %}
+                  </div>
+
+                  <p class="mt-2">{{ item.review.review_text }}</p>
+
+                  <small>Rating: {{ item.review.rating }}/5</small>
+
+            </div>
+            {% endfor %}
+      </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+      new Chart(document.getElementById("sentimentChart"), {
+            type: "pie",
+            data: {
+                  labels: ["Positive", "Negative", "Neutral"],
+                  datasets: [{
+                        data: [
+                              {{ sentiment_data.positive }},
+                  {{ sentiment_data.negative }},
+                {{ sentiment_data.neutral }}
+            ]
+        }]
+    }
+});
+</script>
+
+{% endblock %}
