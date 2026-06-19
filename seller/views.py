@@ -10,7 +10,7 @@ import json
 from .models import Seller
 from store.models import Product, ProductImage, Order, OrderItem, StockAlert, CATEGORY_CHOICES
 from ml.sales_prediction import get_seasonal_prediction
-from ml.regional_analysis import get_regional_data
+from ml.regional_analysis import get_regional_clusters
 from ml.stock_alert import check_and_generate_stock_alerts
 
 
@@ -109,9 +109,9 @@ def seller_dashboard(request):
         for d in oi_qs.values('product__category').annotate(total=Sum('price_at_purchase')).order_by('-total')[:6]
     ]
 
-    predictions  = get_seasonal_prediction()
-    regional_data= get_regional_data(seller)
-    recent_orders= Order.objects.filter(items__product__seller=seller).distinct().order_by('-order_date')[:8]
+    predictions = get_seasonal_prediction()
+    regional_data = get_regional_clusters(seller)
+    recent_orders = Order.objects.filter(items__product__seller=seller).distinct().order_by('-order_date')[:8]
 
     # Pending order requests count for badge
     try:

@@ -1,51 +1,61 @@
 """
-ML Module 2: Regional Demand Analysis
-Groups orders by user state and product category
+ML Module 2: Regional Demand Classification using K-Means
+Clusters states into High / Medium / Low demand zones
 """
 
+from sklearn.cluster import KMeans
+import numpy as np
 
-def get_regional_data(seller):
-    """Returns top states for a specific seller's products."""
+def get_regional_clusters(seller=None):
     try:
         from store.models import OrderItem
-        from django.db.models import Sum
+        import numpy as np
+        from sklearn.cluster import KMeans
 
-        items = OrderItem.objects.filter(
-            product__seller=seller
-        ).select_related('order__user', 'product')
+        items = OrderItem.objects.filter(product__seller=seller) if seller else OrderItem.objects.all()
 
-        region_map = {}
+        if not items.exists():
+            return []
+
+        state_sales = {}
+
         for item in items:
-            state = item.order.user.state or 'Unknown'
-            cat   = item.product.category
-            key   = (state, cat)
-            region_map[key] = region_map.get(key, 0) + item.quantity
+            state = getattr(item.order.user, "state", None) or "Unknown"
+            state_sales[state] = state_sales.get(state, 0) + item.quantity
 
-        # Convert to sorted list
-        data = [{'state': k[0], 'category': k[1], 'quantity': v}
-                for k, v in sorted(region_map.items(), key=lambda x: -x[1])]
-        return data[:10]
-    except Exception:
-        return []
+        if len(state_sales) < 3:
+            return [
+                {"state": k, "sales": v, "label": "Insufficient Data"}
+                for k, v in state_sales.items()
+            ]
 
+        states = list(state_sales.keys())
+        sales = np.array(list(state_sales.values())).reshape(-1, 1)
 
-def get_all_regional_data():
-    """Returns top states across all sellers (for SuperAdmin)."""
-    try:
-        from store.models import OrderItem
-        from django.db.models import Sum
+        kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
+        clusters = kmeans.fit_predict(sales)
 
-        items = OrderItem.objects.select_related('order__user', 'product').all()
+        results = []
+        for i, state in enumerate(states):
+            cluster = clusters[i]
 
-        region_map = {}
-        for item in items:
-            state = item.order.user.state or 'Unknown'
-            cat   = item.product.category
-            key   = (state, cat)
-            region_map[key] = region_map.get(key, 0) + item.quantity
+            if cluster == np.argmax(kmeans.cluster_centers_):
+                label = "High Demand"
+            elif cluster == np.argmin(kmeans.cluster_centers_):
+                label = "Low Demand"
+            else:
+                label = "Medium Demand"
 
-        data = [{'state': k[0], 'category': k[1], 'quantity': v}
-                for k, v in sorted(region_map.items(), key=lambda x: -x[1])]
-        return data[:15]
-    except Exception:
+            results.append({
+                "state": state,
+                "sales": int(sales[i][0]),
+                "cluster": int(cluster),
+                "label": label
+            })
+
+        return sorted(results, key=lambda x: x["sales"], reverse=True)
+
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
         return []

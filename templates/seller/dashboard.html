@@ -179,8 +179,8 @@
               {% for r in regional_data %}
               <tr>
                 <td>{{ r.state }}</td>
-                <td><span class="badge bg-secondary">{{ r.category }}</span></td>
-                <td><strong>{{ r.quantity }}</strong></td>
+                <td><span class="badge bg-secondary">{{ r.label }}</span></td>
+                <td><strong>{{ r.sales }}</strong></td>
               </tr>
               {% empty %}
               <tr><td colspan="3" class="text-center text-muted py-3">No regional data yet.</td></tr>

@@ -8,7 +8,8 @@ from users.models import UserProfile
 from seller.models import Seller
 from store.models import Product, Order, OrderItem, Discount, StockAlert
 from ml.sales_prediction import get_seasonal_prediction
-from ml.regional_analysis import get_all_regional_data
+# from ml.regional_analysis import get_all_regional_data
+from ml.regional_analysis import get_regional_clusters
 
 SUPERADMIN_EMAIL    = 'lotus@gmail.com'
 SUPERADMIN_PASSWORD = 'Alpha@123'
@@ -78,10 +79,10 @@ def superadmin_dashboard(request):
     pm_data = list(Order.objects.values('payment_method').annotate(c=Count('order_id')))
 
     predictions   = get_seasonal_prediction()
-    regional_data = get_all_regional_data()
-    recent_orders = Order.objects.order_by('-order_date')[:10]
-    alerts        = StockAlert.objects.filter(is_resolved=False).select_related('product__seller')[:10]
-
+    regional_data = get_regional_clusters()
+    recent_orders = Order.objects.all().order_by('-order_date')[:10]
+    alerts = StockAlert.objects.filter(is_resolved=False).select_related('product')[:10]
+    
     return render(request, 'superadmin/dashboard.html', {
         'total_users': total_users, 'total_sellers': total_sellers,
         'blacklisted': blacklisted, 'total_products': total_products,
@@ -209,7 +210,7 @@ def delete_discount(request, discount_id):
 def analytics(request):
     if not _sa_check(request): return redirect('superadmin_login')
     predictions   = get_seasonal_prediction()
-    regional_data = get_all_regional_data()
+    regional_data = get_all_regional_cluster()
     return render(request, 'superadmin/analytics.html', {
         'predictions': predictions, 'regional_data': regional_data,
     })

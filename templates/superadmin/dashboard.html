@@ -150,7 +150,7 @@
             <thead class="table-light"><tr><th>State</th><th>Category</th><th>Units</th></tr></thead>
             <tbody>
               {% for r in regional_data %}
-              <tr><td>{{ r.state }}</td><td><span class="badge bg-secondary">{{ r.category }}</span></td><td><strong>{{ r.quantity }}</strong></td></tr>
+              <tr><td>{{ r.state }}</td><td><span class="badge bg-secondary">{{ r.label }}</span></td><td><strong>{{ r.sales }}</strong></td></tr>
               {% empty %}
               <tr><td colspan="3" class="text-center py-3 text-muted">No data yet.</td></tr>
               {% endfor %}
