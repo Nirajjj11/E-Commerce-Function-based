@@ -52,8 +52,8 @@
                 <tr>
                   <td><span class="badge bg-warning text-dark">#{{ forloop.counter }}</span></td>
                   <td><strong>{{ r.state }}</strong></td>
-                  <td><span class="badge bg-secondary">{{ r.category }}</span></td>
-                  <td><span class="fw-bold text-primary">{{ r.quantity }}</span></td>
+                  <td><span class="badge bg-secondary">{{ r.label }}</span></td>
+                  <td><span class="fw-bold text-primary">{{ r.sales }}</span></td>
                 </tr>
                 {% empty %}
                 <tr><td colspan="4" class="text-center py-3 text-muted">No data yet. Orders will populate this.</td></tr>

@@ -206,15 +206,19 @@ def delete_discount(request, discount_id):
     messages.success(request, 'Discount deleted.')
     return redirect('manage_discounts')
 
+from ml.regional_analysis import get_regional_clusters  # IMPORTANT
 
 def analytics(request):
-    if not _sa_check(request): return redirect('superadmin_login')
-    predictions   = get_seasonal_prediction()
-    regional_data = get_all_regional_cluster()
-    return render(request, 'superadmin/analytics.html', {
-        'predictions': predictions, 'regional_data': regional_data,
-    })
+    if not _sa_check(request):
+        return redirect('superadmin_login')
 
+    predictions = get_seasonal_prediction()
+    regional_data = get_regional_clusters()   # FIXED HERE
+
+    return render(request, 'superadmin/analytics.html', {
+        'predictions': predictions,
+        'regional_data': regional_data,
+    })
 
 # ── Chatbot Management Views ──────────────────────────────────────────────
 

@@ -1,11 +1,3 @@
-"""
-ML Module 2: Regional Demand Classification using K-Means
-Clusters states into High / Medium / Low demand zones
-"""
-
-from sklearn.cluster import KMeans
-import numpy as np
-
 def get_regional_clusters(seller=None):
     try:
         from store.models import OrderItem
@@ -17,38 +9,66 @@ def get_regional_clusters(seller=None):
         if not items.exists():
             return []
 
+        # ── STEP 1: Aggregate state sales ───────────────
         state_sales = {}
 
         for item in items:
             state = getattr(item.order.user, "state", None) or "Unknown"
             state_sales[state] = state_sales.get(state, 0) + item.quantity
 
-        if len(state_sales) < 3:
+        states = list(state_sales.keys())
+        values = np.array(list(state_sales.values())).reshape(-1, 1)
+
+        # ── STEP 2: fallback for small data ─────────────
+        if len(states) < 3:
             return [
-                {"state": k, "sales": v, "label": "Insufficient Data"}
-                for k, v in state_sales.items()
+                {
+                    "state": s,
+                    "sales": int(v),
+                    "label": "Low Data"
+                }
+                for s, v in zip(states, values.flatten())
             ]
 
-        states = list(state_sales.keys())
-        sales = np.array(list(state_sales.values())).reshape(-1, 1)
+        # ── STEP 3: safe clustering ─────────────────────
+        n_clusters = min(3, len(states))
 
-        kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
-        clusters = kmeans.fit_predict(sales)
+        if n_clusters < 2:
+            return [
+                {
+                    "state": s,
+                    "sales": int(v),
+                    "label": "Single Region"
+                }
+                for s, v in zip(states, values.flatten())
+            ]
+
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        clusters = kmeans.fit_predict(values)
+
+        centers = kmeans.cluster_centers_.flatten()
+
+        # sort cluster centers
+        sorted_idx = np.argsort(centers)
+
+        low_cluster = sorted_idx[0]
+        high_cluster = sorted_idx[-1]
 
         results = []
+
         for i, state in enumerate(states):
             cluster = clusters[i]
 
-            if cluster == np.argmax(kmeans.cluster_centers_):
+            if cluster == high_cluster:
                 label = "High Demand"
-            elif cluster == np.argmin(kmeans.cluster_centers_):
+            elif cluster == low_cluster:
                 label = "Low Demand"
             else:
                 label = "Medium Demand"
 
             results.append({
                 "state": state,
-                "sales": int(sales[i][0]),
+                "sales": int(values[i][0]),
                 "cluster": int(cluster),
                 "label": label
             })
